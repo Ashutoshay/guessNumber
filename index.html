@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Guess a Number</title>
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://bootswatch.com/4/yeti/bootstrap.min.css">
+
+</head>
+<body>
+	<div class="container mt-4 text-center">
+		<h1 class="display-4"><i class="fa fa-question text-danger"></i>User<span class="text-danger">Guess</span>Number</h1>
+
+	<div class="resultParas">
+		<p class="guesses"></p>
+		<p class="lastResult"></p>
+		<p class="lowOrHi"></p>
+		
+	</div>
+	<!-- <form id="book-form"> -->
+	<!-- <div class="form-group"> -->
+		<label for="title">Enter a guess:</label>
+		<input type="number" id="guessField" class="guessField" class="form-control">
+		<input type="button" value="Submit guess" class="guessSubmit" class="btn btn-primary btn-block">
+	<!-- </div> -->
+	<!-- </form> -->
+	
+	<p id="root"></p>
+</div>
+	<script >
+		let randomNumber = Math.floor(Math.random() * 6) + 1;
+
+		const guesses = document.querySelector('.guesses');
+		const lastResult = document.querySelector('.lastResult');
+		const lowOrHi = document.querySelector('.lowOrHi');
+
+		const guessSubmit  = document.querySelector('.guessSubmit');
+		const guessField = document.querySelector('.guessField');
+
+		let guessCount  = 1;
+		let resetButton;
+
+		let  checkGuess = ()=>{
+			return new Promise((resolve, reject)=>{
+			let userGuess = Number(guessField.value);
+			if (guessCount === 1) {
+				guesses.textContent = 'Previous guesses: ' + '';
+				resolve();
+			}
+			guesses.textContent += userGuess + ' ';
+
+			if (userGuess === randomNumber) {
+				lastResult.textContent = 'Congratulation! You got it right\n Point : 2';
+				lastResult.style.backgroundColor = 'green';
+				lowOrHi.textContent ='';
+				setGameOver();
+				resolve();
+			}else if (userGuess === randomNumber-1 || userGuess=== randomNumber+1) {
+				lastResult.textContent = 'You Guess one high or low Point : 1';
+				lastResult.style.backgroundColor = 'yellow';
+				lowOrHi.textContent ='';
+				// setGameOver();
+				resolve();
+			}
+			else if(guessCount === 10){
+				lastResult.textContent = '!!! Game Over !!!!';
+				setGameOver();
+				resolve();
+			}else{
+				lastResult.textContent = 'Wrong guess ! Point: 0';
+				lastResult.style.backgroundColor = 'red';
+				if (userGuess < randomNumber) {
+					lowOrHi.textContent = 'last guess was too low!';
+				}else if(userGuess > randomNumber){
+					lowOrHi.textContent = 'Last guess was too high!';
+				}
+			}
+
+			guessCount++;
+			guessField.value = '';
+			guessField.focus();
+		}).catch(error)
+		{
+			document.querySelector('#root').innerHTML = error;
+		}
+		}
+
+		guessSubmit.addEventListener('click',checkGuess);
+
+		function setGameOver(){
+			guessField.disabled = true;
+			guessSubmit.disabled = true;
+			resetButton = document.createElement('button');
+			resetButton.textContent = 'Start new game';
+			resetButton.style.marginLeft = '45rem';
+			document.body.append(resetButton);
+			resetButton.addEventListener('click', resetGame);
+		}
+
+		function resetGame(){
+			guessCount = 1;
+
+			const resetParas = document.querySelectorAll('.resultParas p');
+			for(let i = 0; i < resetParas.length ; i++){
+				resetParas[i].textContent = '';
+			}
+
+			resetButton.parentNode.removeChild(resetButton);
+
+			guessField.disabled = false;
+			guessSubmit.disabled = false;
+			guessField.value = '';
+			guessField.focus();
+
+
+			lastResult.style.backgroundColor = 'white';
+
+			randomNumber = Math.floor(Math.random() * 6) +1;
+		}
+
+		
+
+
+		
+	</script>
+</body>
+</html>
